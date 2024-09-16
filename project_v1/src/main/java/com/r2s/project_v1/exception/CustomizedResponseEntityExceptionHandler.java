@@ -1,7 +1,7 @@
 package com.r2s.project_v1.exception;
 
 
-import com.baconbao.user_service.dto.ApiResponse;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
