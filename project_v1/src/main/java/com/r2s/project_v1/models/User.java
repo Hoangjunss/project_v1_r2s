@@ -22,7 +22,7 @@ import java.util.List;
 public class User implements UserDetails {
     @Id
     private Integer id;
-    private String name;
+    private String username;
     private String email;
     private String password;
     private String fullname;
@@ -41,7 +41,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return getUsername();
+        return username;
     }
 
     @Override

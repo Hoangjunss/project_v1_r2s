@@ -36,7 +36,7 @@ private OurUserDetailsService ourUserDetailsService;
                 .csrf(AbstractHttpConfigurer::disable)
 
                 // Configure các luồng truy cập
-                .authorizeHttpRequests((auth) -> auth
+                .authorizeHttpRequests((auth) -> auth.requestMatchers("/api/v1/user").permitAll()
 
 
                     // Xác thực tất cả các request
