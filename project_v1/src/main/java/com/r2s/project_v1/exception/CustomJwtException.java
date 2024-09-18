@@ -16,4 +16,10 @@ public class CustomJwtException extends RuntimeException {
         this.message = error.getMessage();
         this.statusCode = error.getStatusCode();
     }
+    public CustomJwtException(Error error) {
+        super(error.getMessage());
+        this.code = error.getCode();
+        this.message = error.getMessage();
+        this.statusCode = error.getStatusCode();
+    }
 }
