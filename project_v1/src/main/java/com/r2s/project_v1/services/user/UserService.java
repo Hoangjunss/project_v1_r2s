@@ -10,5 +10,5 @@ import org.springframework.stereotype.Service;
 public interface UserService {
     CreateUserResponse registration(CreateUserRequest createUserRequest);
     AuthenticationResponse signIn(AuthenticationRequest signinRequest);
-
+    AuthenticationResponse generateRefreshToken(String token);
 }

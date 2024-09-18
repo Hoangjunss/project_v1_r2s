@@ -22,7 +22,7 @@ import java.util.function.Function;
 @Slf4j
 public class JwtTokenUtil {
 
-    private SecretKey Key;
+    private static SecretKey Key;
     private final SecretKey secretKeyForRefreshToken = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private static final long EXPIRATION_TIME = 86400000; // 24hours or 86400000 milisecs
 
@@ -42,9 +42,8 @@ public class JwtTokenUtil {
                 .compact();
     }
 
-    public String generateRefreshToken(HashMap<String, Object> claims, UserDetails userDetails) {
+    public String generateRefreshToken( UserDetails userDetails) {
         return Jwts.builder()
-                .claims(claims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
@@ -56,7 +55,7 @@ public class JwtTokenUtil {
         return extractClaims(token, Claims::getSubject);
     }
 
-    private <T> T extractClaims(String token, Function<Claims, T> claimsTFunction) {
+    public static   <T> T extractClaims(String token, Function<Claims, T> claimsTFunction) {
         try {
             return claimsTFunction.apply(Jwts.parser().verifyWith(Key).build().parseSignedClaims(token).getPayload());
         } catch (ExpiredJwtException e) {

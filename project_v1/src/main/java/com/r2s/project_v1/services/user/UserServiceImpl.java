@@ -10,15 +10,22 @@ import com.r2s.project_v1.exception.Error;
 import com.r2s.project_v1.models.User;
 import com.r2s.project_v1.repository.UserRepository;
 import com.r2s.project_v1.security.JwtTokenUtil;
+import com.r2s.project_v1.security.OurUserDetailsService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.function.Function;
+
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -27,6 +34,8 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private OurUserDetailsService ourUserDetailsService;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
     @Override
@@ -65,13 +74,35 @@ public class UserServiceImpl implements UserService {
             throw new CustomJwtException(Error.NOT_FOUND);
         }
         var jwt = jwtTokenUtil.generateToken(user);
-        var refreshToken = jwtTokenUtil.generateRefreshToken(new HashMap<>(), user);
+        var refreshToken = jwtTokenUtil.generateRefreshToken( user);
         return AuthenticationResponse.builder()
                 .token(jwt)
                 .refreshToken(refreshToken)
                 .build();
 
     }
+
+    @Override
+    public AuthenticationResponse generateRefreshToken(String token) {
+        Claims claims = JwtTokenUtil.extractClaims(token, Function.identity());
+        if (claims == null) {
+            throw new RuntimeException("Token không hợp lệ");
+        }
+
+        // 2. Lấy thông tin từ token cũ
+        String username = claims.getSubject();
+        Date expiration = claims.getExpiration();
+
+        // 3. Tạo refresh token mới
+        UserDetails userDetails= ourUserDetailsService.loadUserByUsername(username);
+        String jwttoken= jwtTokenUtil.generateToken(userDetails);
+        String refreshToken=jwtTokenUtil.generateRefreshToken(userDetails);
+        // 4. Trả về đối tượng phản hồi chứa refresh token
+        return  AuthenticationResponse.builder().token(jwttoken).refreshToken(jwttoken).build();
+    }
+
+
+
 
 
     private boolean usernameExists(String username) {

@@ -30,5 +30,13 @@ public class UserController {
 
         return ResponseEntity.ok(authenticationResponse);
     }
+    @PostMapping("/refreshtoken")
+    public ResponseEntity<AuthenticationResponse> refreshtoken(
+            @RequestBody String token) {
+        AuthenticationResponse authenticationResponse = userService.generateRefreshToken(token);
+
+
+        return ResponseEntity.ok(authenticationResponse);
+    }
 
 }
