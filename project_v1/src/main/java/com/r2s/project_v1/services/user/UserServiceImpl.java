@@ -2,6 +2,7 @@ package com.r2s.project_v1.services.user;
 
 import com.r2s.project_v1.dto.userDTO.request.AuthenticationRequest;
 import com.r2s.project_v1.dto.userDTO.request.CreateUserRequest;
+import com.r2s.project_v1.dto.userDTO.request.RefreshToken;
 import com.r2s.project_v1.dto.userDTO.response.AuthenticationResponse;
 import com.r2s.project_v1.dto.userDTO.response.CreateUserResponse;
 import com.r2s.project_v1.exception.CustomException;
@@ -54,7 +55,7 @@ public class UserServiceImpl implements UserService {
         try {
             userSave= userRepository.save(user);
         }catch (CustomException e){
-
+        throw  new CustomException(Error.DATABASE_ACCESS_ERROR);
         }
         return modelMapper.map(userSave, CreateUserResponse.class) ;
     }
@@ -83,15 +84,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthenticationResponse generateRefreshToken(String token) {
-        Claims claims = JwtTokenUtil.extractClaims(token, Function.identity());
-        if (claims == null) {
-            throw new RuntimeException("Token không hợp lệ");
-        }
+
+    public AuthenticationResponse generateRefreshToken(RefreshToken token) {
+
 
         // 2. Lấy thông tin từ token cũ
-        String username = claims.getSubject();
-        Date expiration = claims.getExpiration();
+        String username = jwtTokenUtil.extractUsernameRefreshToken(token.getToken());
 
         // 3. Tạo refresh token mới
         UserDetails userDetails= ourUserDetailsService.loadUserByUsername(username);

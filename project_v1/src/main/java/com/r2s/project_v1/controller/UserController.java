@@ -2,6 +2,7 @@ package com.r2s.project_v1.controller;
 
 import com.r2s.project_v1.dto.userDTO.request.AuthenticationRequest;
 import com.r2s.project_v1.dto.userDTO.request.CreateUserRequest;
+import com.r2s.project_v1.dto.userDTO.request.RefreshToken;
 import com.r2s.project_v1.dto.userDTO.response.AuthenticationResponse;
 import com.r2s.project_v1.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,19 @@ public class UserController {
     }
     @PostMapping("/refreshtoken")
     public ResponseEntity<AuthenticationResponse> refreshtoken(
-            @RequestBody String token) {
+            @RequestBody RefreshToken token) {
         AuthenticationResponse authenticationResponse = userService.generateRefreshToken(token);
 
 
         return ResponseEntity.ok(authenticationResponse);
+    }
+    @PostMapping("/1")
+    public ResponseEntity<String> h(
+            ) {
+
+
+
+        return ResponseEntity.ok("oki");
     }
 
 }

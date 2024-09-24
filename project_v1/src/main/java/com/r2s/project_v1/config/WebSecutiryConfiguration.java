@@ -17,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
@@ -24,6 +25,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 public class WebSecutiryConfiguration {
 @Autowired
 private OurUserDetailsService ourUserDetailsService;
+@Autowired
+private JwtAuthenticationFilter jwtAuthenticationFilter;
 
 
 
@@ -36,7 +39,7 @@ private OurUserDetailsService ourUserDetailsService;
                 .csrf(AbstractHttpConfigurer::disable)
 
                 // Configure các luồng truy cập
-                .authorizeHttpRequests((auth) -> auth.requestMatchers("/api/v1/user/signup","/api/v1/user/signin").permitAll()
+                .authorizeHttpRequests((auth) -> auth.requestMatchers("/api/v1/user/signup","/api/v1/user/signin","/api/v1/user/refreshtoken").permitAll()
                     // Xác thực tất cả các request
                         .anyRequest()
                         .authenticated()
@@ -45,7 +48,9 @@ private OurUserDetailsService ourUserDetailsService;
 
                 // Add JWT vào chuỗi lọc và ưu tiên loc theo JWT
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider());
+                .authenticationProvider(authenticationProvider()).addFilterBefore(
+                        jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class
+        );
 
 
 
