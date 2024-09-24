@@ -8,6 +8,7 @@ import com.r2s.project_v1.dto.userDTO.response.CreateUserResponse;
 import com.r2s.project_v1.exception.CustomException;
 import com.r2s.project_v1.exception.CustomJwtException;
 import com.r2s.project_v1.exception.Error;
+import com.r2s.project_v1.models.Role;
 import com.r2s.project_v1.models.User;
 import com.r2s.project_v1.repository.UserRepository;
 import com.r2s.project_v1.security.JwtTokenUtil;
@@ -44,12 +45,14 @@ public class UserServiceImpl implements UserService {
         if(usernameExists(createUserRequest.getUsername())){
             throw new CustomException(Error.USER_ALREADY_EXISTS);
         }
+
         User user=User.builder()
                 .id(getGenerationId())
                 .email(createUserRequest.getEmail())
                 .username(createUserRequest.getUsername())
                 .fullname(createUserRequest.getFullname())
                 .password(passwordEncoder.encode(createUserRequest.getPassword()))
+                .role(Role.valueOf(createUserRequest.getRole()))
                 .build();
         User userSave=new User();
         try {
@@ -57,7 +60,9 @@ public class UserServiceImpl implements UserService {
         }catch (CustomException e){
         throw  new CustomException(Error.DATABASE_ACCESS_ERROR);
         }
-        return modelMapper.map(userSave, CreateUserResponse.class) ;
+        CreateUserResponse createUserResponse= modelMapper.map(userSave, CreateUserResponse.class) ;
+        createUserResponse.setRole(userSave.getRole().toString());
+        return createUserResponse;
     }
     @Override
     public AuthenticationResponse signIn(AuthenticationRequest signinRequest) {
@@ -89,7 +94,7 @@ public class UserServiceImpl implements UserService {
 
 
         // 2. Lấy thông tin từ token cũ
-        String username = jwtTokenUtil.extractUsernameRefreshToken(token.getToken());
+        String username = jwtTokenUtil.extractUsernameToken(token.getToken());
 
         // 3. Tạo refresh token mới
         UserDetails userDetails= ourUserDetailsService.loadUserByUsername(username);

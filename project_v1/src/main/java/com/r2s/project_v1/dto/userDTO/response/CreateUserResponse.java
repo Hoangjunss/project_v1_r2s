@@ -16,4 +16,5 @@ public class CreateUserResponse {
     private String username;
     private String email;
     private String fullname;
+    private String role;
 }
