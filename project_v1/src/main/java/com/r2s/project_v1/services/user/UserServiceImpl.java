@@ -1,10 +1,10 @@
 package com.r2s.project_v1.services.user;
 
-import com.r2s.project_v1.dto.userDTO.request.AuthenticationRequest;
-import com.r2s.project_v1.dto.userDTO.request.CreateUserRequest;
-import com.r2s.project_v1.dto.userDTO.request.RefreshToken;
-import com.r2s.project_v1.dto.userDTO.response.AuthenticationResponse;
-import com.r2s.project_v1.dto.userDTO.response.CreateUserResponse;
+import com.r2s.project_v1.dto.request.user.AuthenticationRequest;
+import com.r2s.project_v1.dto.request.user.CreateUserRequest;
+import com.r2s.project_v1.dto.request.user.RefreshToken;
+import com.r2s.project_v1.dto.response.user.AuthenticationResponse;
+import com.r2s.project_v1.dto.response.user.CreateUserResponse;
 import com.r2s.project_v1.exception.CustomException;
 import com.r2s.project_v1.exception.CustomJwtException;
 import com.r2s.project_v1.exception.Error;
@@ -13,20 +13,13 @@ import com.r2s.project_v1.models.User;
 import com.r2s.project_v1.repository.UserRepository;
 import com.r2s.project_v1.security.JwtTokenUtil;
 import com.r2s.project_v1.security.OurUserDetailsService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.UUID;
-import java.util.function.Function;
 
 @Service
 public class UserServiceImpl implements UserService {

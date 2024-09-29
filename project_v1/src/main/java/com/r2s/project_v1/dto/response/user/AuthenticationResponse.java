@@ -1,4 +1,4 @@
-package com.r2s.project_v1.dto.userDTO.response;
+package com.r2s.project_v1.dto.response.user;
 
 
 import com.r2s.project_v1.models.User;

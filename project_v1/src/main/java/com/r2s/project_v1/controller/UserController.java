@@ -1,13 +1,12 @@
 package com.r2s.project_v1.controller;
 
-import com.r2s.project_v1.dto.userDTO.request.AuthenticationRequest;
-import com.r2s.project_v1.dto.userDTO.request.CreateUserRequest;
-import com.r2s.project_v1.dto.userDTO.request.RefreshToken;
-import com.r2s.project_v1.dto.userDTO.response.AuthenticationResponse;
+import com.r2s.project_v1.dto.request.user.AuthenticationRequest;
+import com.r2s.project_v1.dto.request.user.CreateUserRequest;
+import com.r2s.project_v1.dto.request.user.RefreshToken;
+import com.r2s.project_v1.dto.response.user.AuthenticationResponse;
 import com.r2s.project_v1.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

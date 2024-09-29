@@ -1,4 +1,4 @@
-package com.r2s.project_v1.dto.userDTO.request;
+package com.r2s.project_v1.dto.response.product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RefreshToken {
-    private String token;
+public class UpdateCategoryResponse {
+    private Integer id;
+    private String name;
 }

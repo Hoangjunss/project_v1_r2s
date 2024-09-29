@@ -1,4 +1,4 @@
-package com.r2s.project_v1.dto.userDTO.request;
+package com.r2s.project_v1.dto.request.user;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

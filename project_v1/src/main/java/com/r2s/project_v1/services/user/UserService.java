@@ -1,10 +1,10 @@
 package com.r2s.project_v1.services.user;
 
-import com.r2s.project_v1.dto.userDTO.request.AuthenticationRequest;
-import com.r2s.project_v1.dto.userDTO.request.CreateUserRequest;
-import com.r2s.project_v1.dto.userDTO.request.RefreshToken;
-import com.r2s.project_v1.dto.userDTO.response.AuthenticationResponse;
-import com.r2s.project_v1.dto.userDTO.response.CreateUserResponse;
+import com.r2s.project_v1.dto.request.user.AuthenticationRequest;
+import com.r2s.project_v1.dto.request.user.CreateUserRequest;
+import com.r2s.project_v1.dto.request.user.RefreshToken;
+import com.r2s.project_v1.dto.response.user.AuthenticationResponse;
+import com.r2s.project_v1.dto.response.user.CreateUserResponse;
 import org.springframework.stereotype.Service;
 
 @Service
