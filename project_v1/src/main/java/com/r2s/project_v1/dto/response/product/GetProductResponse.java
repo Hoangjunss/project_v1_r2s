@@ -13,6 +13,6 @@ public class GetProductResponse {
 
     private Integer id;
     private String name;
-    private String price;
+    private Double price;
     private GetCategoryResponse category;
 }

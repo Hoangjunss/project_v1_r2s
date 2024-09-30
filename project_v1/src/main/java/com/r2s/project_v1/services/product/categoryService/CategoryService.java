@@ -6,9 +6,10 @@ import com.r2s.project_v1.dto.request.product.UpdateCategoryRequest;
 import com.r2s.project_v1.dto.response.product.CreateCategoryResponse;
 import com.r2s.project_v1.dto.response.product.GetCategoryResponse;
 import com.r2s.project_v1.dto.response.product.UpdateCategoryResponse;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public interface CategoryService {
     CreateCategoryResponse createCategory(CreateCategoryRequest createCategoryRequest);
     UpdateCategoryResponse updateCategory(UpdateCategoryRequest updateCategoryRequest);

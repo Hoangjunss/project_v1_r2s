@@ -26,7 +26,23 @@ public enum Error {
     USER_UNABLE_TO_SAVE(1003, "Unable to save user", HttpStatus.INTERNAL_SERVER_ERROR),
     USER_UNABLE_TO_UPDATE(1004, "Unable to update user", HttpStatus.INTERNAL_SERVER_ERROR),
     USER_UNABLE_TO_DELETE(1005, "Unable to delete user", HttpStatus.INTERNAL_SERVER_ERROR),
-    //Jwt token-related errors
+    //Product error codes
+    PRODUCT_NOT_FOUND(2001, "Product not found", HttpStatus.NOT_FOUND),
+    PRODUCT_ALREADY_EXISTS(2002, "Product already exists", HttpStatus.CONFLICT),
+    PRODUCT_UNABLE_TO_SAVE(2003, "Unable to save product", HttpStatus.INTERNAL_SERVER_ERROR),
+    PRODUCT_UNABLE_TO_UPDATE(2004, "Unable to update product", HttpStatus.INTERNAL_SERVER_ERROR),
+    PRODUCT_UNABLE_TO_DELETE(2005, "Unable to delete product", HttpStatus.INTERNAL_SERVER_ERROR),
+    PRODUCT_INVALID_NAME(2006, "Invalid name", HttpStatus.BAD_REQUEST),
+    PRODUCT_INVALID_PRICE(2007, "Invalid price", HttpStatus.BAD_REQUEST),
+    //Order error codes
+    //Category error codes
+    CATEGORY_NOT_FOUND(3001, "Category not found", HttpStatus.NOT_FOUND),
+    CATEGORY_ALREADY_EXISTS(3002, "Category already exists", HttpStatus.CONFLICT),
+    CATEGORY_UNABLE_TO_SAVE(3003, "Unable to save category", HttpStatus.INTERNAL_SERVER_ERROR),
+    CATEGORY_UNABLE_TO_UPDATE(3004, "Unable to update category", HttpStatus.INTERNAL_SERVER_ERROR),
+    CATEGORY_UNABLE_TO_DELETE(3005, "Unable to delete category", HttpStatus.INTERNAL_SERVER_ERROR),
+    CATEGORY_INVALID_NAME(3006, "Invalid name", HttpStatus.BAD_REQUEST),
+    //Jwt token-related error
     JWT_INVALID(1101, "Invalid JWT token", HttpStatus.UNAUTHORIZED),
     JWT_EXPIRED(1102, "JWT token expired", HttpStatus.UNAUTHORIZED),
     JWT_MALFORMED(1103, "Malformed JWT token", HttpStatus.UNAUTHORIZED),

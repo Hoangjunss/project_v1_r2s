@@ -16,7 +16,7 @@ public class Product {
     @Id
     private Integer id;
     private String name;
-    private String price;
+    private Double price;
     @ManyToOne
     @JoinColumn(name = "idCategory")
     private Category category;

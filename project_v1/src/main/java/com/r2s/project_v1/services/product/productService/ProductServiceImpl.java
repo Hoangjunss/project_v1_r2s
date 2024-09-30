@@ -3,17 +3,22 @@ package com.r2s.project_v1.services.product.productService;
 import com.r2s.project_v1.dto.request.product.CreateProductRequest;
 import com.r2s.project_v1.dto.request.product.UpdateProductRequest;
 import com.r2s.project_v1.dto.response.product.*;
+import com.r2s.project_v1.exception.CustomException;
+import com.r2s.project_v1.exception.Error;
 import com.r2s.project_v1.models.Category;
 import com.r2s.project_v1.models.Product;
 import com.r2s.project_v1.repository.ProductRepository;
 import com.r2s.project_v1.services.product.categoryService.CategoryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
+@Service
 public class ProductServiceImpl implements ProductService{
     @Autowired
     private ProductRepository productRepository;
@@ -27,19 +32,33 @@ public class ProductServiceImpl implements ProductService{
 
         Category category=modelMapper.map(getCategoryResponse,Category.class);
 
+        if(createProductRequest.getName() == null){
+            throw new CustomException(Error.PRODUCT_INVALID_NAME);
+        }
+        if(createProductRequest.getPrice() == null){
+            throw new CustomException(Error.PRODUCT_INVALID_PRICE);
+        }
+
         Product product=Product.builder()
                 .id(getGenerationId())
                 .name(createProductRequest.getName())
                 .price(createProductRequest.getPrice())
                 .category(category).build();
 
-        Product productSave=productRepository.save(product);
+        try {
+            Product productSave=productRepository.save(product);
 
-       CreateProductResponse createProductResponse= modelMapper.map(productSave, CreateProductResponse.class);
+            CreateProductResponse createProductResponse= modelMapper.map(productSave, CreateProductResponse.class);
 
-       createProductResponse.setCategory(modelMapper.map(productSave.getCategory(),CreateCategoryResponse.class));
+            createProductResponse.setCategory(modelMapper.map(productSave.getCategory(),CreateCategoryResponse.class));
 
-        return createProductResponse;
+            return createProductResponse;
+
+        }  catch (DataIntegrityViolationException e) {
+            throw new CustomException(Error.PRODUCT_UNABLE_TO_SAVE);
+        } catch (DataAccessException e) {
+            throw new CustomException(Error.DATABASE_ACCESS_ERROR);
+        }
 
     }
 
@@ -51,6 +70,13 @@ public class ProductServiceImpl implements ProductService{
 
         Product existingProduct=findById(updateProductRequest.getId());
 
+        if(updateProductRequest.getName() == null){
+            throw new CustomException(Error.PRODUCT_INVALID_NAME);
+        }
+        if(updateProductRequest.getPrice() == null){
+            throw new CustomException(Error.PRODUCT_INVALID_PRICE);
+        }
+
         Product updatedProduct = Product.builder()
                 .id(existingProduct.getId())
                 .price(updateProductRequest.getPrice())
@@ -58,13 +84,20 @@ public class ProductServiceImpl implements ProductService{
                 .category(category)
                 .build();
 
-        Product productSave=productRepository.save(updatedProduct);
+        try {
+            Product productSave=productRepository.save(updatedProduct);
 
-        UpdateProductResponse updateProductResponse=modelMapper.map(productSave, UpdateProductResponse.class);
+            UpdateProductResponse updateProductResponse=modelMapper.map(productSave, UpdateProductResponse.class);
 
-        updateProductResponse.setCategory(modelMapper.map(productSave.getCategory(), UpdateCategoryResponse.class));
+            updateProductResponse.setCategory(modelMapper.map(productSave.getCategory(), UpdateCategoryResponse.class));
 
-        return updateProductResponse;
+            return updateProductResponse;
+
+        } catch (DataIntegrityViolationException e) {
+            throw new CustomException(Error.PRODUCT_UNABLE_TO_UPDATE);
+        } catch (DataAccessException e) {
+            throw new CustomException(Error.DATABASE_ACCESS_ERROR);
+        }
     }
 
     @Override
@@ -72,32 +105,41 @@ public class ProductServiceImpl implements ProductService{
 
         Product existingProduct=findById(id);
 
-        productRepository.delete(existingProduct);
+        try {
+            productRepository.delete(existingProduct);
+        } catch (DataIntegrityViolationException e) {
+            throw new CustomException(Error.PRODUCT_UNABLE_TO_DELETE);
+        } catch (DataAccessException e) {
+            throw new CustomException(Error.DATABASE_ACCESS_ERROR);
+        }
     }
 
     @Override
     public List<GetProductResponse> getList() {
 
-        List<Product> productList=productRepository.findAll();
+        try {
+            List<Product> productList=productRepository.findAll();
 
-        return productList.stream()
-                .map(product -> {
-                    GetProductResponse getProductResponse=modelMapper.map(product, GetProductResponse.class);
+            return productList.stream()
+                    .map(product -> {
+                        GetProductResponse getProductResponse=modelMapper.map(product, GetProductResponse.class);
 
-                    getProductResponse.setCategory(modelMapper.map(product.getCategory(), GetCategoryResponse.class));
+                        getProductResponse.setCategory(modelMapper.map(product.getCategory(), GetCategoryResponse.class));
 
-                    return getProductResponse;
-                })
-                .collect(Collectors.toList());
+                        return getProductResponse;
+                    })
+                    .collect(Collectors.toList());
+        } catch (DataAccessException e){
+            throw new CustomException(Error.DATABASE_ACCESS_ERROR);
+        }
     }
     public Integer getGenerationId() {
-
         UUID uuid = UUID.randomUUID();
-        // Use most significant bits and ensure it's within the integer range
         return (int) (uuid.getMostSignificantBits() & 0xFFFFFFFFL);
     }
-    public Product findById(Integer id) {
 
-        return productRepository.findById(id).orElseThrow();
+    public Product findById(Integer id) {
+        return productRepository.findById(id)
+                .orElseThrow(()-> new CustomException(Error.PRODUCT_NOT_FOUND));
     }
 }

@@ -13,6 +13,6 @@ public class UpdateProductResponse {
 
     private Integer id;
     private String name;
-    private String price;
+    private double price;
     private UpdateCategoryResponse category;
 }

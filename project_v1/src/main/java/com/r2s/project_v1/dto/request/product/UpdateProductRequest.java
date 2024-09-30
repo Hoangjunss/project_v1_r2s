@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class UpdateProductRequest {
     private Integer id;
     private String name;
-    private String price;
+    private Double price;
     private Integer IdCategory;
 }
