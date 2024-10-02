@@ -13,6 +13,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +28,8 @@ public class ProductServiceImpl implements ProductService{
     private ModelMapper modelMapper;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private ProductImageService productImageService;
     @Override
     public CreateProductResponse createProduct(CreateProductRequest createProductRequest) {
         GetCategoryResponse getCategoryResponse=categoryService.findById(createProductRequest.getIdCategory());
@@ -38,12 +42,17 @@ public class ProductServiceImpl implements ProductService{
         if(createProductRequest.getPrice() == null){
             throw new CustomException(Error.PRODUCT_INVALID_PRICE);
         }
+        if(createProductRequest.getFile() == null){//raof
+
+        }
 
         Product product=Product.builder()
                 .id(getGenerationId())
                 .name(createProductRequest.getName())
                 .price(createProductRequest.getPrice())
-                .category(category).build();
+                .category(category)
+                .productImage(productImageService.save(createProductRequest.getFile()))
+                .build();
 
         try {
             Product productSave=productRepository.save(product);
@@ -51,6 +60,7 @@ public class ProductServiceImpl implements ProductService{
             CreateProductResponse createProductResponse= modelMapper.map(productSave, CreateProductResponse.class);
 
             createProductResponse.setCategory(modelMapper.map(productSave.getCategory(),CreateCategoryResponse.class));
+            createProductResponse.setFile("http://localhost:8080/api/v1/image?id="+productSave.getProductImage().getId());
 
             return createProductResponse;
 
@@ -77,15 +87,15 @@ public class ProductServiceImpl implements ProductService{
             throw new CustomException(Error.PRODUCT_INVALID_PRICE);
         }
 
-        Product updatedProduct = Product.builder()
-                .id(existingProduct.getId())
-                .price(updateProductRequest.getPrice())
-                .name(updateProductRequest.getName())
-                .category(category)
-                .build();
+        existingProduct.setName(updateProductRequest.getName());
+        existingProduct.setPrice(updateProductRequest.getPrice());
+        existingProduct.setCategory(category);
+        if (updateProductRequest.getFile()!=null){
+            existingProduct.setProductImage(productImageService.save(updateProductRequest.getFile()));
+        }
 
         try {
-            Product productSave=productRepository.save(updatedProduct);
+            Product productSave=productRepository.save(existingProduct);
 
             UpdateProductResponse updateProductResponse=modelMapper.map(productSave, UpdateProductResponse.class);
 
@@ -114,22 +124,21 @@ public class ProductServiceImpl implements ProductService{
         }
     }
 
+
     @Override
-    public List<GetProductResponse> getList() {
-
+    public Page<GetProductResponse> getList(Pageable pageable) {
         try {
-            List<Product> productList=productRepository.findAll();
+            // Lấy danh sách sản phẩm với phân trang
+            Page<Product> productPage = productRepository.findAll(pageable);
 
-            return productList.stream()
-                    .map(product -> {
-                        GetProductResponse getProductResponse=modelMapper.map(product, GetProductResponse.class);
-
-                        getProductResponse.setCategory(modelMapper.map(product.getCategory(), GetCategoryResponse.class));
-
-                        return getProductResponse;
-                    })
-                    .collect(Collectors.toList());
-        } catch (DataAccessException e){
+            // Ánh xạ mỗi sản phẩm thành GetProductResponse
+            return productPage.map(product -> {
+                GetProductResponse getProductResponse = modelMapper.map(product, GetProductResponse.class);
+                // Ánh xạ category
+                getProductResponse.setCategory(modelMapper.map(product.getCategory(), GetCategoryResponse.class));
+                return getProductResponse;
+            });
+        } catch (DataAccessException e) {
             throw new CustomException(Error.DATABASE_ACCESS_ERROR);
         }
     }

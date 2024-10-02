@@ -20,4 +20,7 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "idCategory")
     private Category category;
+    @ManyToOne
+    @JoinColumn(name = "idProductImage")
+    private ProductImage productImage;
 }

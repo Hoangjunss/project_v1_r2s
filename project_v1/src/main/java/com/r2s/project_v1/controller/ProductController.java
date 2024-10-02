@@ -10,7 +10,11 @@ import com.r2s.project_v1.dto.response.product.GetProductResponse;
 import com.r2s.project_v1.dto.response.product.UpdateProductResponse;
 import com.r2s.project_v1.dto.response.user.AuthenticationResponse;
 import com.r2s.project_v1.services.product.productService.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,7 +30,7 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN') ")
     @PostMapping()
     public ResponseEntity<?> create(
-            @RequestBody CreateProductRequest createProductRequest) {
+            @ModelAttribute @Valid CreateProductRequest createProductRequest) {
 
         return new ResponseEntity<>(productService.createProduct(createProductRequest), HttpStatus.CREATED);
     }
@@ -51,9 +55,10 @@ public class ProductController {
     }
     @PreAuthorize("hasRole('USER') ")
     @GetMapping()
-    public ResponseEntity<?> getAll() {
-
-        List<GetProductResponse> getProductResponse=productService.getList();
+    public ResponseEntity<?> getAll( @RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "10") int size ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<GetProductResponse> getProductResponse=productService.getList(pageable);
 
         return ResponseEntity.ok(getProductResponse);
     }

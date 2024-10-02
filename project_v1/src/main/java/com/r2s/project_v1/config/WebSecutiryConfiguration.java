@@ -39,7 +39,7 @@ private JwtAuthenticationFilter jwtAuthenticationFilter;
                 .csrf(AbstractHttpConfigurer::disable)
 
                 // Configure các luồng truy cập
-                .authorizeHttpRequests((auth) -> auth.requestMatchers("/api/v1/user/signup","/api/v1/user/signin","/api/v1/user/refreshtoken").permitAll()
+                .authorizeHttpRequests((auth) -> auth.requestMatchers("/api/v1/user/signup","/api/v1/user/signin","/api/v1/user/refreshtoken","api/v1/image").permitAll()
                     // Xác thực tất cả các request
                         .anyRequest()
                         .authenticated()

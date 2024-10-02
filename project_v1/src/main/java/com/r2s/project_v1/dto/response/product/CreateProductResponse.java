@@ -15,4 +15,5 @@ public class CreateProductResponse {
     private String name;
     private Double price;
     private CreateCategoryResponse category;
+    private String file;
 }
