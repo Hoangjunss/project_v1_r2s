@@ -103,7 +103,7 @@ public class CategoryServiceImpl implements CategoryService {
         try {
 
             // Chuyển đổi từng Category thành GetCategoryResponse
-            return   categoryRepository.findAll(pageable);;
+            return   categoryRepository.findAll(pageable);
         } catch (DataAccessException e) {
             throw new CustomException(Error.DATABASE_ACCESS_ERROR);
         }
