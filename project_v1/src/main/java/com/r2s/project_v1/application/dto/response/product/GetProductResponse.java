@@ -14,5 +14,6 @@ public class GetProductResponse {
     private Integer id;
     private String name;
     private Double price;
-    private GetCategoryResponse category;
+    private String category;
+    private String productImage;
 }

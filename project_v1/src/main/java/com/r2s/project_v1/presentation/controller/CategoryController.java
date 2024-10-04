@@ -1,9 +1,10 @@
-package com.r2s.project_v1.controller;
+package com.r2s.project_v1.presentation.controller;
 
 import com.r2s.project_v1.application.dto.request.product.CreateCategoryRequest;
 import com.r2s.project_v1.application.dto.request.product.UpdateCategoryRequest;
 import com.r2s.project_v1.application.dto.response.product.GetCategoryResponse;
 import com.r2s.project_v1.application.dto.response.product.UpdateCategoryResponse;
+import com.r2s.project_v1.application.service.CategoryApplicationServiceImpl;
 import com.r2s.project_v1.domain.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class CategoryController {
     @Autowired
-    private CategoryService categoryService;
+    private CategoryApplicationServiceImpl categoryService;
     @PreAuthorize("hasRole('ADMIN') ")
     @PostMapping()
     public ResponseEntity<?> create(

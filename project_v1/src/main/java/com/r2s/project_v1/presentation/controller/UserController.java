@@ -1,23 +1,21 @@
-package com.r2s.project_v1.controller;
+package com.r2s.project_v1.presentation.controller;
 
 import com.r2s.project_v1.application.dto.request.user.AuthenticationRequest;
 import com.r2s.project_v1.application.dto.request.user.CreateUserRequest;
 import com.r2s.project_v1.application.dto.request.user.RefreshToken;
 import com.r2s.project_v1.application.dto.response.user.AuthenticationResponse;
+import com.r2s.project_v1.application.service.UserApplicationService;
 import com.r2s.project_v1.domain.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/v1/user")
 @RestController
 public class UserController {
     @Autowired
-    private UserService userService;
+    private UserApplicationService userService;
     @PostMapping("/signup")
     public ResponseEntity<?> registration(@RequestBody CreateUserRequest createUserRequest) {
        return new ResponseEntity<>(userService.registration(createUserRequest), HttpStatus.CREATED);
@@ -32,7 +30,7 @@ public class UserController {
     }
     @PostMapping("/refreshtoken")
     public ResponseEntity<AuthenticationResponse> refreshtoken(
-            @RequestBody RefreshToken token) {
+            @RequestParam String token) {
         AuthenticationResponse authenticationResponse = userService.generateRefreshToken(token);
 
 

@@ -1,4 +1,4 @@
-package com.r2s.project_v1.controller;
+package com.r2s.project_v1.presentation.controller;
 
 import com.r2s.project_v1.domain.models.ProductImage;
 import com.r2s.project_v1.domain.service.ProductImageService;

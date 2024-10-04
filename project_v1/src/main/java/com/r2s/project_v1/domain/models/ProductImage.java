@@ -21,4 +21,5 @@ public class ProductImage {
     @Lob
     @Column(columnDefinition = "LONGBLOB", name = "image_data")
     private byte[] imageData;
+    private String url;
 }

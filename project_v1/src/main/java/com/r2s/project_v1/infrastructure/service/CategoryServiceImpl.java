@@ -5,11 +5,11 @@ import com.r2s.project_v1.application.dto.request.product.UpdateCategoryRequest;
 import com.r2s.project_v1.application.dto.response.product.CreateCategoryResponse;
 import com.r2s.project_v1.application.dto.response.product.GetCategoryResponse;
 import com.r2s.project_v1.application.dto.response.product.UpdateCategoryResponse;
+import com.r2s.project_v1.domain.models.Category;
+import com.r2s.project_v1.domain.repository.CategoryRepository;
 import com.r2s.project_v1.domain.service.CategoryService;
 import com.r2s.project_v1.infrastructure.exception.CustomException;
 import com.r2s.project_v1.infrastructure.exception.Error;
-import com.r2s.project_v1.domain.models.Category;
-import com.r2s.project_v1.domain.repository.CategoryRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -28,21 +28,19 @@ public class CategoryServiceImpl implements CategoryService {
     private ModelMapper modelMapper;
 
     @Override
-    public CreateCategoryResponse createCategory(CreateCategoryRequest createCategoryRequest) {
+    public Category createCategory(Category category) {
 
-        if (createCategoryRequest.getName() == null) {
+        if (category.getName() == null) {
             throw new CustomException(Error.CATEGORY_INVALID_NAME);
         }
 
-        Category category = Category.builder()
-                .id(getGenerationId())
-                .name(createCategoryRequest.getName())
-                .build();
+       category.setId(getGenerationId());
 
         try {
-            Category categorySave = categoryRepository.save(category);
 
-            return modelMapper.map(categorySave, CreateCategoryResponse.class);
+
+            return categoryRepository.save(category);
+
         } catch (DataIntegrityViolationException e) {
             throw new CustomException(Error.CATEGORY_UNABLE_TO_SAVE);
         } catch (DataAccessException e) {
@@ -51,22 +49,16 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public UpdateCategoryResponse updateCategory(UpdateCategoryRequest updateCategoryRequest) {
-        GetCategoryResponse getCategoryResponse = findById(updateCategoryRequest.getId());
+    public Category updateCategory(Category category) {
+        Category categoryFind = findById(category.getId());
 
-        if (updateCategoryRequest.getName() == null) {
+        if (category.getName() == null) {
             throw new CustomException(Error.CATEGORY_INVALID_NAME);
         }
-
-        Category category = Category.builder()
-                .id(getCategoryResponse.getId())
-                .name(updateCategoryRequest.getName())
-                .build();
-
         try {
-            Category categorySave = categoryRepository.save(category);
 
-            return modelMapper.map(categorySave, UpdateCategoryResponse.class);
+
+            return categoryRepository.save(category);
         } catch (DataIntegrityViolationException e) {
             throw new CustomException(Error.CATEGORY_UNABLE_TO_UPDATE);
         } catch (DataAccessException e) {
@@ -92,8 +84,8 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     @Override
-    public GetCategoryResponse findById(Integer id) {
-        return modelMapper.map(findID(id), GetCategoryResponse.class);
+    public Category findById(Integer id) {
+        return findID(id);
     }
 
     public Integer getGenerationId() {
@@ -107,17 +99,13 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Page<GetCategoryResponse> getList(Pageable pageable) {
+    public Page<Category> getList(Pageable pageable) {
         try {
-            Page<Category> categoryPage = categoryRepository.findAll(pageable);
 
             // Chuyển đổi từng Category thành GetCategoryResponse
-            return categoryPage.map(category -> modelMapper.map(category, GetCategoryResponse.class));
+            return   categoryRepository.findAll(pageable);;
         } catch (DataAccessException e) {
             throw new CustomException(Error.DATABASE_ACCESS_ERROR);
         }
     }
 }
-
-
-

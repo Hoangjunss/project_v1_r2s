@@ -14,6 +14,6 @@ public class CreateProductResponse {
     private Integer id;
     private String name;
     private Double price;
-    private CreateCategoryResponse category;
-    private String file;
+    private String category;
+    private String productImage;
 }

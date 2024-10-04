@@ -14,5 +14,6 @@ public class UpdateProductResponse {
     private Integer id;
     private String name;
     private double price;
-    private UpdateCategoryResponse category;
+    private String category;
+    private String productImage;
 }

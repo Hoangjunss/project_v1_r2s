@@ -1,9 +1,10 @@
-package com.r2s.project_v1.controller;
+package com.r2s.project_v1.presentation.controller;
 
 import com.r2s.project_v1.application.dto.request.product.CreateProductRequest;
 import com.r2s.project_v1.application.dto.request.product.UpdateProductRequest;
 import com.r2s.project_v1.application.dto.response.product.GetProductResponse;
 import com.r2s.project_v1.application.dto.response.product.UpdateProductResponse;
+import com.r2s.project_v1.application.service.ProductApplicationService;
 import com.r2s.project_v1.domain.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class ProductController {
     @Autowired
-    private ProductService productService;
+    private ProductApplicationService productService;
     @PreAuthorize("hasRole('ADMIN') ")
     @PostMapping()
     public ResponseEntity<?> create(

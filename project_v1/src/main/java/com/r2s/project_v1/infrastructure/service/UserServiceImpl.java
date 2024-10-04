@@ -5,24 +5,22 @@ import com.r2s.project_v1.application.dto.request.user.CreateUserRequest;
 import com.r2s.project_v1.application.dto.request.user.RefreshToken;
 import com.r2s.project_v1.application.dto.response.user.AuthenticationResponse;
 import com.r2s.project_v1.application.dto.response.user.CreateUserResponse;
+import com.r2s.project_v1.domain.models.Role;
+import com.r2s.project_v1.domain.models.User;
+import com.r2s.project_v1.domain.repository.UserRepository;
 import com.r2s.project_v1.domain.service.UserService;
 import com.r2s.project_v1.infrastructure.exception.CustomException;
 import com.r2s.project_v1.infrastructure.exception.CustomJwtException;
 import com.r2s.project_v1.infrastructure.exception.Error;
-import com.r2s.project_v1.domain.models.Role;
-import com.r2s.project_v1.domain.models.User;
-import com.r2s.project_v1.domain.repository.UserRepository;
 import com.r2s.project_v1.infrastructure.security.JwtTokenUtil;
 import com.r2s.project_v1.infrastructure.security.OurUserDetailsService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
-@Service
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
@@ -35,67 +33,53 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
     @Override
-    public CreateUserResponse registration(CreateUserRequest createUserRequest) {
-        if(usernameExists(createUserRequest.getUsername())){
+    public User registration(User user) {
+        if(usernameExists(user.getUsername())){
             throw new CustomException(Error.USER_ALREADY_EXISTS);
         }
+        user.setId(getGenerationId());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        User user=User.builder()
-                .id(getGenerationId())
-                .email(createUserRequest.getEmail())
-                .username(createUserRequest.getUsername())
-                .fullname(createUserRequest.getFullname())
-                .password(passwordEncoder.encode(createUserRequest.getPassword()))
-                .role(Role.valueOf(createUserRequest.getRole()))
-                .build();
-        User userSave=new User();
+
         try {
-            userSave= userRepository.save(user);
+            user= userRepository.save(user);
         }catch (CustomException e){
-        throw  new CustomException(Error.DATABASE_ACCESS_ERROR);
+            throw  new CustomException(Error.DATABASE_ACCESS_ERROR);
         }
-        CreateUserResponse createUserResponse= modelMapper.map(userSave, CreateUserResponse.class) ;
-        createUserResponse.setRole(userSave.getRole().toString());
-        return createUserResponse;
+        return user;
     }
     @Override
-    public AuthenticationResponse signIn(AuthenticationRequest signinRequest) {
-        String name = signinRequest.getName().trim().toLowerCase();
+    public User signIn(User user) {
+        String name = user.getUsername().trim().toLowerCase();
 
         // Kiểm tra xem email đã tồn tại chưa
         if (!usernameExists(name)) {
-           throw new CustomJwtException(Error.USER_NOT_FOUND);
+            throw new CustomJwtException(Error.USER_NOT_FOUND);
         }
 
 
 
-         User user = userRepository.findByUsername(name).orElseThrow();
-        if (!passwordEncoder.matches(signinRequest.getPassword(), user.getPassword())) {
+        User userFind = userRepository.findByUsername(name).orElseThrow();
+        if (!passwordEncoder.matches(user.getPassword(), userFind.getPassword())) {
             throw new CustomJwtException(Error.NOT_FOUND);
         }
-        var jwt = jwtTokenUtil.generateToken(user);
-        var refreshToken = jwtTokenUtil.generateRefreshToken( user);
-        return AuthenticationResponse.builder()
-                .token(jwt)
-                .refreshToken(refreshToken)
-                .build();
+
+        return userFind;
 
     }
 
     @Override
 
-    public AuthenticationResponse generateRefreshToken(RefreshToken token) {
+    public UserDetails generateRefreshToken(String token) {
 
 
         // 2. Lấy thông tin từ token cũ
-        String username = jwtTokenUtil.extractUsernameToken(token.getToken());
+        String username = jwtTokenUtil.extractUsernameToken(token);
 
         // 3. Tạo refresh token mới
         UserDetails userDetails= ourUserDetailsService.loadUserByUsername(username);
-        String jwttoken= jwtTokenUtil.generateToken(userDetails);
-        String refreshToken=jwtTokenUtil.generateRefreshToken(userDetails);
-        // 4. Trả về đối tượng phản hồi chứa refresh token
-        return  AuthenticationResponse.builder().token(jwttoken).refreshToken(jwttoken).build();
+
+        return  userDetails;
     }
 
 
