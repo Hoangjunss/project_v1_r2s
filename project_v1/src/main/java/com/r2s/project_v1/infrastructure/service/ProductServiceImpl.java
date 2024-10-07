@@ -13,6 +13,7 @@ import com.r2s.project_v1.infrastructure.exception.CustomException;
 import com.r2s.project_v1.infrastructure.exception.Error;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -108,6 +109,7 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
+    @Cacheable("get_List")
     public Page<Product> getList(Pageable pageable) {
         try {
 
