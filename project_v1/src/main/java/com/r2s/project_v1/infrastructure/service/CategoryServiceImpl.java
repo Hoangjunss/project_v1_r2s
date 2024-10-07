@@ -50,11 +50,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category updateCategory(Category category) {
-        Category categoryFind = findById(category.getId());
-
         if (category.getName() == null) {
             throw new CustomException(Error.CATEGORY_INVALID_NAME);
         }
+
+        Category categoryFind = findById(category.getId());
+
+
         try {
 
 

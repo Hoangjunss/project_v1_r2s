@@ -63,16 +63,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product updateProduct(Product product) {
-
-
-        Product existingProduct=findById(product.getId());
-
         if(product.getName() == null){
             throw new CustomException(Error.PRODUCT_INVALID_NAME);
         }
         if(product.getPrice() == null){
             throw new CustomException(Error.PRODUCT_INVALID_PRICE);
         }
+
+        Product existingProduct=findById(product.getId());
+
+
 
         existingProduct.setName(product.getName());
         existingProduct.setPrice(product.getPrice());

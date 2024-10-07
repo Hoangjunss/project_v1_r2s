@@ -21,24 +21,24 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
     @Autowired
     private ProductApplicationService productService;
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasRole('ROLE_ADMIN') ")
     @PostMapping()
     public ResponseEntity<?> create(
             @ModelAttribute @Valid CreateProductRequest createProductRequest) {
 
         return new ResponseEntity<>(productService.createProduct(createProductRequest), HttpStatus.CREATED);
     }
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasRole('ROLE_ADMIN') ")
     @PatchMapping()
     public ResponseEntity<?> update(
-            @RequestBody UpdateProductRequest updateProductRequest) {
+            @ModelAttribute @Valid UpdateProductRequest updateProductRequest) {
 
         UpdateProductResponse updateProductResponse=productService.updateProduct(updateProductRequest);
 
 
         return ResponseEntity.ok(updateProductResponse);
     }
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasRole('ROLE_ADMIN') ")
    @DeleteMapping()
     public ResponseEntity<?> delete(
             @RequestParam Integer id) {
@@ -47,7 +47,7 @@ public class ProductController {
 
         return ResponseEntity.ok(true);
     }
-    @PreAuthorize("hasRole('USER') ")
+    @PreAuthorize("hasRole('ROLE_USER')or hasRole('ROLE_ADMIN') ")
     @GetMapping()
     public ResponseEntity<?> getAll( @RequestParam(defaultValue = "0") int page,
                                      @RequestParam(defaultValue = "10") int size ) {

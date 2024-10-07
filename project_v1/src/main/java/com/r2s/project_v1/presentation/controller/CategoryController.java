@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
     @Autowired
     private CategoryApplicationServiceImpl categoryService;
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping()
     public ResponseEntity<?> create(
             @RequestBody CreateCategoryRequest createCategoryRequest) {
 
         return new ResponseEntity<>(categoryService.createCategory(createCategoryRequest), HttpStatus.CREATED);
     }
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasRole('ROLE_ADMIN') ")
     @PatchMapping()
     public ResponseEntity<?> update(
             @RequestBody UpdateCategoryRequest updateCategoryRequest) {
@@ -37,7 +37,7 @@ public class CategoryController {
 
         return ResponseEntity.ok(updateCategoryResponse);
     }
-    @PreAuthorize("hasRole('ADMIN') ")
+    @PreAuthorize("hasRole('ROLE_ADMIN') ")
     @DeleteMapping()
     public ResponseEntity<?> delete(
             @RequestParam Integer id) {
@@ -46,7 +46,7 @@ public class CategoryController {
 
         return ResponseEntity.ok(true);
     }
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping()
     public ResponseEntity<?> getAll(  @RequestParam(defaultValue = "0") int page,
                                       @RequestParam(defaultValue = "10") int size ) {

@@ -4,9 +4,10 @@ import com.r2s.project_v1.domain.models.Role;
 import com.r2s.project_v1.domain.repository.RoleRepository;
 import com.r2s.project_v1.domain.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-
+@Service
 public class RoleServiceImpl implements RoleService {
     @Autowired
     private RoleRepository roleRepository;
