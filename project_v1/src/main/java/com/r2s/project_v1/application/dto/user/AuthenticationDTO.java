@@ -1,4 +1,4 @@
-package com.r2s.project_v1.application.dto.request.product;
+package com.r2s.project_v1.application.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateCategoryRequest {
-
-    private String name;
+public class AuthenticationDTO {
+    private String token;
+    private String refreshToken;
 }

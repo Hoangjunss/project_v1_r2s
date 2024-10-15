@@ -1,10 +1,6 @@
 package com.r2s.project_v1.domain.service;
 
-import com.r2s.project_v1.application.dto.request.product.CreateCategoryRequest;
-import com.r2s.project_v1.application.dto.request.product.UpdateCategoryRequest;
-import com.r2s.project_v1.application.dto.response.product.CreateCategoryResponse;
-import com.r2s.project_v1.application.dto.response.product.GetCategoryResponse;
-import com.r2s.project_v1.application.dto.response.product.UpdateCategoryResponse;
+
 import com.r2s.project_v1.domain.models.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

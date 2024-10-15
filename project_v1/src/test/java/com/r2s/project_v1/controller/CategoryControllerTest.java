@@ -5,12 +5,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.r2s.project_v1.application.dto.request.product.CreateCategoryRequest;
-import com.r2s.project_v1.application.dto.request.product.UpdateCategoryRequest;
-import com.r2s.project_v1.application.dto.response.product.CreateCategoryResponse;
-import com.r2s.project_v1.application.dto.response.product.GetCategoryResponse;
-import com.r2s.project_v1.application.dto.response.product.UpdateCategoryResponse;
-import com.r2s.project_v1.application.service.CategoryApplicationServiceImpl;
+import com.r2s.project_v1.application.dto.product.CategoryCreateDTO;
+import com.r2s.project_v1.application.dto.product.CategoryDTO;
+
+import com.r2s.project_v1.application.service.CategoryApplicationService;
 import com.r2s.project_v1.infrastructure.security.JwtTokenUtil;
 import com.r2s.project_v1.infrastructure.security.OurUserDetailsService;
 import com.r2s.project_v1.presentation.controller.CategoryController;
@@ -20,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -41,61 +40,68 @@ class CategoryControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private CategoryApplicationServiceImpl categoryService;
+    private CategoryApplicationService categoryService;
 
     @MockBean
     private OurUserDetailsService ourUserDetailsService;
     @MockBean
     private JwtTokenUtil jwtTokenUtil;
+    @Value("${server.servlet.context-path}")
+    private String prefix;
 
-    private CreateCategoryRequest createCategoryRequest;
-    private UpdateCategoryRequest updateCategoryRequest;
+    private CategoryCreateDTO createCategoryRequest;
+    private CategoryDTO categoryDTO;
 
     @BeforeEach
     void setUp() {
-        createCategoryRequest = new CreateCategoryRequest();
+        createCategoryRequest = new CategoryCreateDTO();
+
         createCategoryRequest.setName("Category 1");
 
-        updateCategoryRequest = new UpdateCategoryRequest();
-        updateCategoryRequest.setId(1);
-        updateCategoryRequest.setName("Updated Category");
+
+        categoryDTO = new CategoryDTO();
+
+        categoryDTO.setId(1);
+
+        categoryDTO.setName("Updated Category");
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void createCategory_shouldReturn201() throws Exception {
-        // Giả lập kết quả trả về của service
-        when(categoryService.createCategory(any(CreateCategoryRequest.class)))
-                .thenReturn(new CreateCategoryResponse(1, "Category 1"));
 
-        mockMvc.perform(post("/api/v1/category")
+        when(categoryService.createCategory(any(CategoryCreateDTO.class)))
+                .thenReturn(categoryDTO);
+
+        mockMvc.perform(post(prefix+"category")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"Category 1\"}"))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Category 1"));
 
-        verify(categoryService, times(1)).createCategory(any(CreateCategoryRequest.class));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(categoryDTO.getId()))
+                .andExpect(jsonPath("$.name").value(categoryDTO.getName()));
+
+        verify(categoryService, times(1)).createCategory(any(CategoryCreateDTO.class));
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void updateCategory_shouldReturn200() throws Exception {
-        UpdateCategoryResponse updateCategoryResponse = new UpdateCategoryResponse(1, "Updated Category");
 
-        when(categoryService.updateCategory(any(UpdateCategoryRequest.class)))
-                .thenReturn(updateCategoryResponse);
 
-        mockMvc.perform(patch("/api/v1/category")
+        when(categoryService.updateCategory(any(CategoryDTO.class)))
+                .thenReturn(categoryDTO);
+
+        mockMvc.perform(patch(prefix+"/category")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"id\":1,\"name\":\"Updated Category\"}"))
+                        .content(categoryDTO.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Updated Category"));
+                .andExpect(jsonPath("$.id").value(categoryDTO.getId()))
+                .andExpect(jsonPath("$.name").value(categoryDTO.getName()));
 
-        verify(categoryService, times(1)).updateCategory(any(UpdateCategoryRequest.class));
+        verify(categoryService, times(1)).updateCategory(any(CategoryDTO.class));
     }
 
     @Test
@@ -103,7 +109,7 @@ class CategoryControllerTest {
     void deleteCategory_shouldReturn200() throws Exception {
         doNothing().when(categoryService).deleteCategory(anyInt());
 
-        mockMvc.perform(delete("/api/v1/category?id=1")
+        mockMvc.perform(delete(prefix+"/category?id=1")
                         .with(csrf()))
                 .andExpect(status().isOk());
 
@@ -114,15 +120,17 @@ class CategoryControllerTest {
     @WithMockUser(roles = "USER")
     void getAllCategories_shouldReturn200() throws Exception {
         PageRequest pageable = PageRequest.of(0, 10);
-        GetCategoryResponse categoryResponse = new GetCategoryResponse(1, "Category 1");
-        when(categoryService.getList(pageable))
-                .thenReturn(new PageImpl<>(Collections.singletonList(categoryResponse)));
 
-        mockMvc.perform(get("/api/v1/category?page=0&size=10")
+
+
+        when(categoryService.getList(pageable))
+                .thenReturn(new PageImpl<>(Collections.singletonList(categoryDTO)));
+
+        mockMvc.perform(get(prefix+"/category?page=0&size=10")
                         .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(1))
-                .andExpect(jsonPath("$.content[0].name").value("Category 1"));
+                .andExpect(jsonPath("$.content[0].id").value(categoryDTO.getId()))
+                .andExpect(jsonPath("$.content[0].name").value(categoryDTO.getName()));
 
         verify(categoryService, times(1)).getList(pageable);
     }

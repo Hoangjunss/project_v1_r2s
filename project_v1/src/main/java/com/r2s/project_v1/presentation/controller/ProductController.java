@@ -1,9 +1,9 @@
 package com.r2s.project_v1.presentation.controller;
 
-import com.r2s.project_v1.application.dto.request.product.CreateProductRequest;
-import com.r2s.project_v1.application.dto.request.product.UpdateProductRequest;
-import com.r2s.project_v1.application.dto.response.product.GetProductResponse;
-import com.r2s.project_v1.application.dto.response.product.UpdateProductResponse;
+import com.r2s.project_v1.application.dto.product.ProductCreateDTO;
+import com.r2s.project_v1.application.dto.product.ProductDTO;
+import com.r2s.project_v1.application.dto.product.ProductUpdateDTO;
+
 import com.r2s.project_v1.application.service.ProductApplicationService;
 import com.r2s.project_v1.domain.service.ProductService;
 import jakarta.validation.Valid;
@@ -16,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/api/v1/product")
+import java.io.IOException;
+
+@RequestMapping("/product")
 @RestController
 public class ProductController {
     @Autowired
@@ -24,16 +26,16 @@ public class ProductController {
     @PreAuthorize("hasRole('ROLE_ADMIN') ")
     @PostMapping()
     public ResponseEntity<?> create(
-            @ModelAttribute @Valid CreateProductRequest createProductRequest) {
+            @ModelAttribute @Valid ProductCreateDTO createProductRequest) throws IOException {
 
         return new ResponseEntity<>(productService.createProduct(createProductRequest), HttpStatus.CREATED);
     }
     @PreAuthorize("hasRole('ROLE_ADMIN') ")
     @PatchMapping()
     public ResponseEntity<?> update(
-            @ModelAttribute @Valid UpdateProductRequest updateProductRequest) {
+            @ModelAttribute @Valid ProductUpdateDTO updateProductRequest) throws IOException {
 
-        UpdateProductResponse updateProductResponse=productService.updateProduct(updateProductRequest);
+        ProductDTO updateProductResponse=productService.updateProduct(updateProductRequest);
 
 
         return ResponseEntity.ok(updateProductResponse);
@@ -52,7 +54,7 @@ public class ProductController {
     public ResponseEntity<?> getAll( @RequestParam(defaultValue = "0") int page,
                                      @RequestParam(defaultValue = "10") int size ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<GetProductResponse> getProductResponse=productService.getList(pageable);
+        Page<ProductDTO> getProductResponse=productService.getList(pageable);
 
         return ResponseEntity.ok(getProductResponse);
     }

@@ -1,10 +1,8 @@
 package com.r2s.project_v1.application.service;
 
-import com.r2s.project_v1.application.dto.request.product.CreateCategoryRequest;
-import com.r2s.project_v1.application.dto.request.product.UpdateCategoryRequest;
-import com.r2s.project_v1.application.dto.response.product.CreateCategoryResponse;
-import com.r2s.project_v1.application.dto.response.product.GetCategoryResponse;
-import com.r2s.project_v1.application.dto.response.product.UpdateCategoryResponse;
+import com.r2s.project_v1.application.dto.product.CategoryCreateDTO;
+import com.r2s.project_v1.application.dto.product.CategoryDTO;
+
 import com.r2s.project_v1.domain.service.CategoryService;
 import com.r2s.project_v1.infrastructure.exception.CustomException;
 import com.r2s.project_v1.infrastructure.exception.Error;
@@ -22,24 +20,24 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public class CategoryApplicationServiceImpl  {
+public class CategoryApplicationService  {
     @Autowired
     private CategoryService categoryService;
     @Autowired
     private CategoryMapper categoryMapper;
 
 
-    public CreateCategoryResponse createCategory(CreateCategoryRequest createCategoryRequest) {
-        Category category=categoryMapper.convertCreateCategoryRequestToCategory(createCategoryRequest);
+    public CategoryDTO createCategory(CategoryCreateDTO createCategoryRequest) {
+        Category category=categoryMapper.convertCategoryCreateDTOToCategory(createCategoryRequest);
         Category categorySave=categoryService.createCategory(category);
-        return categoryMapper.convertCategoryToCreateCategoryResponse(categorySave);
+        return categoryMapper.convertCategoryToCategoryDTO(categorySave);
     }
 
 
-    public UpdateCategoryResponse updateCategory(UpdateCategoryRequest updateCategoryRequest) {
-        Category category=categoryMapper.convertUpdateCategoryRequestToCategory(updateCategoryRequest);
+    public CategoryDTO updateCategory(CategoryDTO updateCategoryRequest) {
+        Category category=categoryMapper.convertCategoryDTOToCategory(updateCategoryRequest);
         Category categoryUpdate=categoryService.updateCategory(category);
-        return categoryMapper.convertCategoryToUpdateCategoryResponse(categoryUpdate);
+        return categoryMapper.convertCategoryToCategoryDTO(categoryUpdate);
 
     }
 
@@ -52,17 +50,17 @@ public class CategoryApplicationServiceImpl  {
 
 
 
-    public GetCategoryResponse findById(Integer id) {
-        return categoryMapper.convertCategoryToGetCategoryResponse(categoryService.findById(id));
+    public CategoryDTO findById(Integer id) {
+        return categoryMapper.convertCategoryToCategoryDTO(categoryService.findById(id));
     }
 
 
 
 
-    public Page<GetCategoryResponse> getList(Pageable pageable) {
+    public Page<CategoryDTO> getList(Pageable pageable) {
         try {
             return categoryService.getList(pageable)
-                    .map(category -> categoryMapper.convertCategoryToGetCategoryResponse(category));
+                    .map(category -> categoryMapper.convertCategoryToCategoryDTO(category));
         } catch (DataAccessException e) {
             throw new CustomException(Error.DATABASE_ACCESS_ERROR);
         }

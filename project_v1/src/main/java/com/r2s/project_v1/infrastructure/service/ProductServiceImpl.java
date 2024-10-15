@@ -1,9 +1,6 @@
 package com.r2s.project_v1.infrastructure.service;
 
-import com.r2s.project_v1.application.dto.request.product.CreateProductRequest;
-import com.r2s.project_v1.application.dto.request.product.UpdateProductRequest;
-import com.r2s.project_v1.application.dto.response.product.*;
-import com.r2s.project_v1.domain.models.Category;
+
 import com.r2s.project_v1.domain.models.Product;
 import com.r2s.project_v1.domain.repository.ProductRepository;
 import com.r2s.project_v1.domain.service.CategoryService;
@@ -49,15 +46,11 @@ public class ProductServiceImpl implements ProductService {
 
        product.setId(getGenerationId());
 
-        try {
+
 
             return productRepository.save(product);
 
-        }  catch (DataIntegrityViolationException e) {
-            throw new CustomException(Error.PRODUCT_UNABLE_TO_SAVE);
-        } catch (DataAccessException e) {
-            throw new CustomException(Error.DATABASE_ACCESS_ERROR);
-        }
+
 
     }
 
@@ -81,15 +74,11 @@ public class ProductServiceImpl implements ProductService {
             existingProduct.setProductImage(product.getProductImage());
         }
 
-        try {
+
 
             return productRepository.save(existingProduct);
 
-        } catch (DataIntegrityViolationException e) {
-            throw new CustomException(Error.PRODUCT_UNABLE_TO_UPDATE);
-        } catch (DataAccessException e) {
-            throw new CustomException(Error.DATABASE_ACCESS_ERROR);
-        }
+
     }
 
     @Override
@@ -97,24 +86,17 @@ public class ProductServiceImpl implements ProductService {
 
         Product existingProduct=findById(id);
 
-        try {
+
             productRepository.delete(existingProduct);
-        } catch (DataIntegrityViolationException e) {
-            throw new CustomException(Error.PRODUCT_UNABLE_TO_DELETE);
-        } catch (DataAccessException e) {
-            throw new CustomException(Error.DATABASE_ACCESS_ERROR);
-        }
+
     }
 
 
     @Override
     public Page<Product> getList(Pageable pageable) {
-        try {
 
             return productRepository.findAll(pageable);
-        } catch (DataAccessException e) {
-            throw new CustomException(Error.DATABASE_ACCESS_ERROR);
-        }
+
     }
     public Integer getGenerationId() {
         UUID uuid = UUID.randomUUID();

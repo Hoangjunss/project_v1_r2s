@@ -1,4 +1,4 @@
-package com.r2s.project_v1.application.dto.request.user;
+package com.r2s.project_v1.application.dto.user;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateUserRequest {
+public class UserRegistrationDTO {
     private String username;
     private String email;
     private String password;

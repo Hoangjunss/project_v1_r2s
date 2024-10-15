@@ -1,4 +1,4 @@
-package com.r2s.project_v1.application.dto.response.product;
+package com.r2s.project_v1.application.dto.product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetCategoryResponse {
-    private Integer id;
+public class CategoryCreateDTO {
+
     private String name;
 }

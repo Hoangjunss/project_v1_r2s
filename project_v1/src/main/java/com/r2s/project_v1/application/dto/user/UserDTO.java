@@ -1,4 +1,4 @@
-package com.r2s.project_v1.application.dto.response.user;
+package com.r2s.project_v1.application.dto.user;
 
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class CreateUserResponse {
+public class UserDTO {
     private Integer id;
     private String username;
     private String email;

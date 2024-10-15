@@ -1,9 +1,8 @@
 package com.r2s.project_v1.presentation.mapper;
 
-import com.r2s.project_v1.application.dto.request.product.CreateCategoryRequest;
-import com.r2s.project_v1.application.dto.request.user.AuthenticationRequest;
-import com.r2s.project_v1.application.dto.request.user.CreateUserRequest;
-import com.r2s.project_v1.application.dto.response.user.CreateUserResponse;
+import com.r2s.project_v1.application.dto.user.UserDTO;
+import com.r2s.project_v1.application.dto.user.UserLoginDTO;
+import com.r2s.project_v1.application.dto.user.UserRegistrationDTO;
 import com.r2s.project_v1.domain.models.Role;
 import com.r2s.project_v1.domain.models.User;
 import org.modelmapper.ModelMapper;
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
     @Autowired
     private ModelMapper modelMapper;
-    public User convertCreateUserRequestToUser(CreateUserRequest createUserRequest,Role role){
+    public User convertUserRegistrationDTOToUser(UserRegistrationDTO createUserRequest, Role role){
         User user= User.builder()
                 .email(createUserRequest.getEmail())
                 .fullname(createUserRequest.getFullname())
@@ -23,8 +22,8 @@ public class UserMapper {
                 .role(role).build();
         return user;
     }
-    public CreateUserResponse convertUserToCreateUserResponse(User user){
-       CreateUserResponse createUserResponse= CreateUserResponse.builder()
+    public UserDTO convertUserToCreateUserResponse(User user){
+       UserDTO createUserResponse= UserDTO.builder()
                .id(user.getId())
                .email(user.getEmail())
                .fullname(user.getFullname())
@@ -33,7 +32,7 @@ public class UserMapper {
                .build();
         return createUserResponse;
     }
-    public User convertAuthenticationToUser(AuthenticationRequest authenticationRequest){
+    public User convertAuthenticationToUser(UserLoginDTO authenticationRequest){
        User user= User.builder()
                .username(authenticationRequest.getName())
                .password(authenticationRequest.getPassword())

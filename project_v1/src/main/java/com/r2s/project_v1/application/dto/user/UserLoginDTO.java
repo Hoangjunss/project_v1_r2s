@@ -1,4 +1,4 @@
-package com.r2s.project_v1.application.dto.request.user;
+package com.r2s.project_v1.application.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationRequest {
+public class UserLoginDTO {
     private String name;
     private String password;
 

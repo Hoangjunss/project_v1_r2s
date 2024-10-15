@@ -1,5 +1,4 @@
-package com.r2s.project_v1.application.dto.response.user;
-
+package com.r2s.project_v1.application.dto.product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,9 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResponse {
-
-    private String token;
-    private String refreshToken;
-
+public class CategoryDTO {
+    private Integer id;
+    private String name;
 }

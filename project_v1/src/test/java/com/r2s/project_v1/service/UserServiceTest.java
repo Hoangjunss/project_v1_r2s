@@ -59,12 +59,17 @@ class UserServiceTest {
     @Test
     void registration_ShouldReturnSavedUser_WhenValid() {
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
+
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         User savedUser = userService.registration(user);
+
         assertNotNull(savedUser);
-        assertEquals("testuser", savedUser.getUsername());
+
+        assertEquals(user.getUsername(), savedUser.getUsername());
+
         verify(userRepository, times(1)).save(any(User.class));
     }
 
@@ -75,7 +80,9 @@ class UserServiceTest {
         CustomException exception = assertThrows(CustomException.class, () -> {
             userService.registration(user);
         });
+
         assertEquals(Error.USER_ALREADY_EXISTS, exception.getError());
+
         verify(userRepository, never()).save(any(User.class));
     }
 
@@ -89,37 +96,38 @@ class UserServiceTest {
         CustomJwtException exception = assertThrows(CustomJwtException.class, () -> {
             userService.signIn(user);
         });
+
         assertEquals(Error.USER_NOT_FOUND, exception.getError());
     }
 
     @Test
     void signIn_ShouldThrowException_WhenPasswordDoesNotMatch() {
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
+
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
 
         CustomJwtException exception = assertThrows(CustomJwtException.class, () -> {
             userService.signIn(user);
         });
-        assertEquals(Error.NOT_FOUND,exception.getError());
+
+        assertEquals(Error.NOT_FOUND, exception.getError());
     }
 
     // Test generateRefreshToken method
     @Test
     void generateRefreshToken_ShouldReturnUserDetails_WhenValidToken() {
+
         when(jwtTokenUtil.extractUsernameToken(anyString())).thenReturn("testuser");
+
         when(ourUserDetailsService.loadUserByUsername(anyString())).thenReturn(mock(UserDetails.class));
 
         UserDetails userDetails = userService.generateRefreshToken("validToken");
+
         assertNotNull(userDetails);
+
         verify(ourUserDetailsService, times(1)).loadUserByUsername(anyString());
     }
 
-    // Utility method for UUID generation
-    @Test
-    void getGenerationId_ShouldReturnValidInteger() {
-        Integer id = userService.getGenerationId();
-        assertNotNull(id);
-        assertTrue(id >= Integer.MIN_VALUE && id <= Integer.MAX_VALUE);
-    }
+
 }
 

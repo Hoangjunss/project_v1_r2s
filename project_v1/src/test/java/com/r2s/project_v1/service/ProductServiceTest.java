@@ -42,9 +42,13 @@ class ProductServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
         product = new Product();
+
         product.setId(1);
+
         product.setName("Test Product");
+
         product.setPrice(100.0);
     }
 
@@ -52,38 +56,50 @@ class ProductServiceTest {
     @Test
     void createProduct_ShouldReturnSavedProduct_WhenValid() {
         when(productRepository.save(any(Product.class))).thenReturn(product);
+
         Product savedProduct = productService.createProduct(product);
+
         assertNotNull(savedProduct);
-        assertEquals("Test Product", savedProduct.getName());
+
+        assertEquals(product.getName(), savedProduct.getName());
+
         verify(productRepository, times(1)).save(any(Product.class));
     }
 
     @Test
     void createProduct_ShouldThrowException_WhenProductNameIsNull() {
         product.setName(null);
+
         CustomException exception = assertThrows(CustomException.class, () -> {
             productService.createProduct(product);
         });
+
         assertEquals(Error.PRODUCT_INVALID_NAME, exception.getError());
+
         verify(productRepository, never()).save(any(Product.class));
     }
 
     @Test
     void createProduct_ShouldThrowException_WhenProductPriceIsNull() {
         product.setPrice(null);
+
         CustomException exception = assertThrows(CustomException.class, () -> {
             productService.createProduct(product);
         });
+
         assertEquals(Error.PRODUCT_INVALID_PRICE, exception.getError());
+
         verify(productRepository, never()).save(any(Product.class));
     }
 
     @Test
     void createProduct_ShouldThrowException_WhenSaveFails() {
         when(productRepository.save(any(Product.class))).thenThrow(DataIntegrityViolationException.class);
+
         CustomException exception = assertThrows(CustomException.class, () -> {
             productService.createProduct(product);
         });
+
         assertEquals(Error.PRODUCT_UNABLE_TO_SAVE, exception.getError());
     }
 
@@ -94,27 +110,33 @@ class ProductServiceTest {
         when(productRepository.save(any(Product.class))).thenReturn(product);
         Product updatedProduct = productService.updateProduct(product);
         assertNotNull(updatedProduct);
-        assertEquals("Test Product", updatedProduct.getName());
+        assertEquals(product.getName(), updatedProduct.getName());
         verify(productRepository, times(1)).save(any(Product.class));
     }
 
     @Test
     void updateProduct_ShouldThrowException_WhenProductNameIsNull() {
         product.setName(null);
+
         CustomException exception = assertThrows(CustomException.class, () -> {
             productService.updateProduct(product);
         });
+
         assertEquals(Error.PRODUCT_INVALID_NAME, exception.getError());
+
         verify(productRepository, never()).save(any(Product.class));
     }
 
     @Test
     void updateProduct_ShouldThrowException_WhenProductPriceIsNull() {
         product.setPrice(null);
+
         CustomException exception = assertThrows(CustomException.class, () -> {
             productService.updateProduct(product);
         });
+
         assertEquals(Error.PRODUCT_INVALID_PRICE, exception.getError());
+
         verify(productRepository, never()).save(any(Product.class));
     }
 
@@ -122,17 +144,22 @@ class ProductServiceTest {
     @Test
     void deleteProduct_ShouldDeleteProduct_WhenValid() {
         when(productRepository.findById(anyInt())).thenReturn(Optional.of(product));
+
         doNothing().when(productRepository).delete(any(Product.class));
+
         assertDoesNotThrow(() -> productService.deleteProduct(1));
+
         verify(productRepository, times(1)).delete(any(Product.class));
     }
 
     @Test
     void deleteProduct_ShouldThrowException_WhenProductNotFound() {
         when(productRepository.findById(anyInt())).thenReturn(Optional.empty());
+
         CustomException exception = assertThrows(CustomException.class, () -> {
             productService.deleteProduct(1);
         });
+
         assertEquals(Error.PRODUCT_NOT_FOUND, exception.getError());
     }
 
@@ -140,10 +167,15 @@ class ProductServiceTest {
     @Test
     void getList_ShouldReturnPageOfProducts_WhenValid() {
         Pageable pageable = PageRequest.of(0, 10);
+
         Page<Product> productPage = new PageImpl<>(List.of(product));
+
         when(productRepository.findAll(pageable)).thenReturn(productPage);
+
         Page<Product> result = productService.getList(pageable);
+
         assertEquals(1, result.getTotalElements());
+
         verify(productRepository, times(1)).findAll(pageable);
     }
 }

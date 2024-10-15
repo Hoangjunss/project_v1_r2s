@@ -1,4 +1,4 @@
-package com.r2s.project_v1.application.dto.request.product;
+package com.r2s.project_v1.application.dto.product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,10 +10,10 @@ import org.springframework.web.multipart.MultipartFile;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateProductRequest {
-    private Integer id;
+public class ProductCreateDTO {
+
     private String name;
     private Double price;
-    private Integer IdCategory;
+    private Integer idCategory;
     private MultipartFile file;
 }

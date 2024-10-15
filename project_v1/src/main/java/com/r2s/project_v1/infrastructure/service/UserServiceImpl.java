@@ -1,11 +1,6 @@
 package com.r2s.project_v1.infrastructure.service;
 
-import com.r2s.project_v1.application.dto.request.user.AuthenticationRequest;
-import com.r2s.project_v1.application.dto.request.user.CreateUserRequest;
-import com.r2s.project_v1.application.dto.request.user.RefreshToken;
-import com.r2s.project_v1.application.dto.response.user.AuthenticationResponse;
-import com.r2s.project_v1.application.dto.response.user.CreateUserResponse;
-import com.r2s.project_v1.domain.models.Role;
+
 import com.r2s.project_v1.domain.models.User;
 import com.r2s.project_v1.domain.repository.UserRepository;
 import com.r2s.project_v1.domain.service.UserService;
@@ -42,11 +37,9 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
 
-        try {
+
             user= userRepository.save(user);
-        }catch (CustomException e){
-            throw  new CustomException(Error.DATABASE_ACCESS_ERROR);
-        }
+
         return user;
     }
     @Override

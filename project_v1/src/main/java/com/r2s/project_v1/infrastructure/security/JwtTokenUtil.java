@@ -23,8 +23,7 @@ public class JwtTokenUtil {
     private final SecretKey secretKeyForAccessToken ;
     private final SecretKey secretKeyForRefreshToken = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-//    private  static  final long EXPIRATION_TIME_FOR_TOKEN = 604_800_000; //1 Day
-//    private  static  final long EXPIRATION_TIME_FOR_REFRSH_TOKEN = 604_800_000; //1 Day
+
 
     private static final long EXPIRATION_TIME_FOR_TOKEN = 2_592_000_000L; // 1 Month (30 Days)
     private static final long EXPIRATION_TIME_FOR_REFRSH_TOKEN = 2_592_000_000L; // 1 Month (30 Days)

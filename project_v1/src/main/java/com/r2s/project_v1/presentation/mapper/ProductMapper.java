@@ -1,10 +1,9 @@
 package com.r2s.project_v1.presentation.mapper;
 
-import com.r2s.project_v1.application.dto.request.product.CreateProductRequest;
-import com.r2s.project_v1.application.dto.request.product.UpdateProductRequest;
-import com.r2s.project_v1.application.dto.response.product.CreateProductResponse;
-import com.r2s.project_v1.application.dto.response.product.GetProductResponse;
-import com.r2s.project_v1.application.dto.response.product.UpdateProductResponse;
+import com.r2s.project_v1.application.dto.product.ProductCreateDTO;
+import com.r2s.project_v1.application.dto.product.ProductDTO;
+import com.r2s.project_v1.application.dto.product.ProductUpdateDTO;
+
 import com.r2s.project_v1.domain.models.Category;
 import com.r2s.project_v1.domain.models.Product;
 import com.r2s.project_v1.domain.models.ProductImage;
@@ -19,7 +18,7 @@ public class ProductMapper {
     private ModelMapper modelMapper;
 
     // Chuyển từ CreateProductRequest sang Product entity
-    public Product convertCreateProductRequestToProduct(CreateProductRequest createProductRequest, Category category, ProductImage productImage) {
+    public Product convertProductCreateDTOToProduct(ProductCreateDTO createProductRequest, Category category, ProductImage productImage) {
         return Product.builder()
                 .name(createProductRequest.getName())
                 .price(createProductRequest.getPrice())
@@ -29,8 +28,8 @@ public class ProductMapper {
     }
 
     // Chuyển từ Product entity sang CreateProductResponse
-    public CreateProductResponse convertProductToCreateProductResponse(Product product) {
-        return CreateProductResponse.builder()
+    public ProductDTO convertProductToProductDTO(Product product) {
+        return ProductDTO.builder()
                 .id(product.getId())
                 .name(product.getName())
                 .price(product.getPrice())
@@ -40,35 +39,13 @@ public class ProductMapper {
     }
 
     // Chuyển từ UpdateProductRequest sang Product entity
-    public Product convertUpdateProductRequestToProduct(UpdateProductRequest updateProductRequest, Category category, ProductImage productImage) {
+    public Product convertProductUpdateDTOToProduct(ProductUpdateDTO updateProductRequest, Category category, ProductImage productImage) {
         return Product.builder()
                 .id(updateProductRequest.getId())
                 .name(updateProductRequest.getName())
                 .price(updateProductRequest.getPrice())
                 .category(category) // Lấy từ database
                 .productImage(productImage) // Giống như trên
-                .build();
-    }
-
-    // Chuyển từ Product entity sang GetProductResponse
-    public GetProductResponse convertProductToGetProductResponse(Product product) {
-        return GetProductResponse.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .price(product.getPrice())
-                .category(product.getCategory().getName())
-                .productImage(product.getProductImage().getUrl())
-                .build();
-    }
-
-    // Chuyển từ Product entity sang UpdateProductResponse
-    public UpdateProductResponse convertProductToUpdateProductResponse(Product product) {
-        return UpdateProductResponse.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .price(product.getPrice())
-                .category(product.getCategory().getName())
-                .productImage(product.getProductImage().getUrl())
                 .build();
     }
 }

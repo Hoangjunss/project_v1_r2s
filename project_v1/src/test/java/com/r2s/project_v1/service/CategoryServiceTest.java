@@ -42,8 +42,11 @@ class CategoryServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
         category = new Category();
+
         category.setId(1);
+
         category.setName("Test Category");
     }
 
@@ -51,49 +54,65 @@ class CategoryServiceTest {
     @Test
     void createCategory_ShouldReturnSavedCategory_WhenValid() {
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
+
         Category savedCategory = categoryService.createCategory(category);
+
         assertNotNull(savedCategory);
-        assertEquals("Test Category", savedCategory.getName());
+
+        assertEquals(category.getName(), savedCategory.getName());
+
         verify(categoryRepository, times(1)).save(any(Category.class));
     }
 
     @Test
     void createCategory_ShouldThrowException_WhenCategoryNameIsNull() {
         category.setName(null);
+
         CustomException exception = assertThrows(CustomException.class, () -> {
             categoryService.createCategory(category);
         });
+
         assertEquals(Error.CATEGORY_INVALID_NAME, exception.getError());
+
         verify(categoryRepository, never()).save(any(Category.class));
     }
 
     @Test
     void createCategory_ShouldThrowException_WhenSaveFails() {
         when(categoryRepository.save(any(Category.class))).thenThrow(DataIntegrityViolationException.class);
+
         CustomException exception = assertThrows(CustomException.class, () -> {
             categoryService.createCategory(category);
         });
+
         assertEquals(Error.CATEGORY_UNABLE_TO_SAVE, exception.getError());
     }
 
-    // Test updateCategory method
     @Test
     void updateCategory_ShouldReturnUpdatedCategory_WhenValid() {
         when(categoryRepository.findById(anyInt())).thenReturn(Optional.of(category));
+
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
+
         Category updatedCategory = categoryService.updateCategory(category);
+
         assertNotNull(updatedCategory);
-        assertEquals("Test Category", updatedCategory.getName());
+
+        assertEquals(category.getName(), updatedCategory.getName());
+
         verify(categoryRepository, times(1)).save(any(Category.class));
     }
 
     @Test
     void updateCategory_ShouldThrowException_WhenCategoryNameIsNull() {
         category.setName(null);
+
         CustomException exception = assertThrows(CustomException.class, () -> {
             categoryService.updateCategory(category);
         });
+
         assertEquals(Error.CATEGORY_INVALID_NAME, exception.getError());
+
         verify(categoryRepository, never()).save(any(Category.class));
     }
 
@@ -101,17 +120,22 @@ class CategoryServiceTest {
     @Test
     void deleteCategory_ShouldDeleteCategory_WhenValid() {
         when(categoryRepository.findById(anyInt())).thenReturn(Optional.of(category));
+
         doNothing().when(categoryRepository).delete(any(Category.class));
+
         assertDoesNotThrow(() -> categoryService.deleteCategory(1));
+
         verify(categoryRepository, times(1)).delete(any(Category.class));
     }
 
     @Test
     void deleteCategory_ShouldThrowException_WhenCategoryNotFound() {
         when(categoryRepository.findById(anyInt())).thenReturn(Optional.empty());
+
         CustomException exception = assertThrows(CustomException.class, () -> {
             categoryService.deleteCategory(1);
         });
+
         assertEquals(Error.CATEGORY_NOT_FOUND, exception.getError());
     }
 
@@ -119,10 +143,15 @@ class CategoryServiceTest {
     @Test
     void getList_ShouldReturnPageOfCategories_WhenValid() {
         Pageable pageable = PageRequest.of(0, 10);
+
         Page<Category> categoryPage = new PageImpl<>(List.of(category));
+
         when(categoryRepository.findAll(pageable)).thenReturn(categoryPage);
+
         Page<Category> result = categoryService.getList(pageable);
+
         assertEquals(1, result.getTotalElements());
+
         verify(categoryRepository, times(1)).findAll(pageable);
     }
 }

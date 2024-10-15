@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/api/v1/image")
+@RequestMapping("/image")
 @RestController
 public class ProjectImageController {
     @Autowired

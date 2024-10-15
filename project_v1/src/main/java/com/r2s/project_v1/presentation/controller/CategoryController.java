@@ -1,10 +1,8 @@
 package com.r2s.project_v1.presentation.controller;
 
-import com.r2s.project_v1.application.dto.request.product.CreateCategoryRequest;
-import com.r2s.project_v1.application.dto.request.product.UpdateCategoryRequest;
-import com.r2s.project_v1.application.dto.response.product.GetCategoryResponse;
-import com.r2s.project_v1.application.dto.response.product.UpdateCategoryResponse;
-import com.r2s.project_v1.application.service.CategoryApplicationServiceImpl;
+import com.r2s.project_v1.application.dto.product.CategoryCreateDTO;
+import com.r2s.project_v1.application.dto.product.CategoryDTO;
+import com.r2s.project_v1.application.service.CategoryApplicationService;
 import com.r2s.project_v1.domain.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,24 +13,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/api/v1/category")
+@RequestMapping("/category")
 @RestController
 public class CategoryController {
     @Autowired
-    private CategoryApplicationServiceImpl categoryService;
+    private CategoryApplicationService categoryService;
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping()
     public ResponseEntity<?> create(
-            @RequestBody CreateCategoryRequest createCategoryRequest) {
+            @RequestBody CategoryCreateDTO createCategoryRequest) {
 
         return new ResponseEntity<>(categoryService.createCategory(createCategoryRequest), HttpStatus.CREATED);
     }
     @PreAuthorize("hasRole('ROLE_ADMIN') ")
     @PatchMapping()
     public ResponseEntity<?> update(
-            @RequestBody UpdateCategoryRequest updateCategoryRequest) {
+            @RequestBody CategoryDTO updateCategoryRequest) {
 
-        UpdateCategoryResponse updateCategoryResponse=categoryService.updateCategory(updateCategoryRequest);
+        CategoryDTO updateCategoryResponse=categoryService.updateCategory(updateCategoryRequest);
 
 
         return ResponseEntity.ok(updateCategoryResponse);
@@ -51,7 +49,7 @@ public class CategoryController {
     public ResponseEntity<?> getAll(  @RequestParam(defaultValue = "0") int page,
                                       @RequestParam(defaultValue = "10") int size ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<GetCategoryResponse> getCategoryResponseList=categoryService.getList(pageable);
+        Page<CategoryDTO> getCategoryResponseList=categoryService.getList(pageable);
 
         return ResponseEntity.ok(getCategoryResponseList);
     }

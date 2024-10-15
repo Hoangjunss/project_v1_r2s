@@ -1,37 +1,36 @@
 package com.r2s.project_v1.presentation.controller;
 
-import com.r2s.project_v1.application.dto.request.user.AuthenticationRequest;
-import com.r2s.project_v1.application.dto.request.user.CreateUserRequest;
-import com.r2s.project_v1.application.dto.request.user.RefreshToken;
-import com.r2s.project_v1.application.dto.response.user.AuthenticationResponse;
+
+import com.r2s.project_v1.application.dto.user.AuthenticationDTO;
+import com.r2s.project_v1.application.dto.user.UserLoginDTO;
+import com.r2s.project_v1.application.dto.user.UserRegistrationDTO;
 import com.r2s.project_v1.application.service.UserApplicationService;
-import com.r2s.project_v1.domain.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/api/v1/user")
+@RequestMapping("/user")
 @RestController
 public class UserController {
     @Autowired
     private UserApplicationService userService;
     @PostMapping("/signup")
-    public ResponseEntity<?> registration(@RequestBody CreateUserRequest createUserRequest) {
+    public ResponseEntity<?> registration(@RequestBody UserRegistrationDTO createUserRequest) {
        return new ResponseEntity<>(userService.registration(createUserRequest), HttpStatus.CREATED);
     }
     @PostMapping("/signin")
-    public ResponseEntity<AuthenticationResponse> signIn(
-            @RequestBody AuthenticationRequest signInRequest) {
-        AuthenticationResponse authenticationResponse = userService.signIn(signInRequest);
+    public ResponseEntity<AuthenticationDTO> signIn(
+            @RequestBody UserLoginDTO signInRequest) {
+        AuthenticationDTO authenticationResponse = userService.signIn(signInRequest);
 
 
         return ResponseEntity.ok(authenticationResponse);
     }
     @PostMapping("/refreshtoken")
-    public ResponseEntity<AuthenticationResponse> refreshtoken(
+    public ResponseEntity<AuthenticationDTO> refreshtoken(
             @RequestParam String token) {
-        AuthenticationResponse authenticationResponse = userService.generateRefreshToken(token);
+        AuthenticationDTO authenticationResponse = userService.generateRefreshToken(token);
 
 
         return ResponseEntity.ok(authenticationResponse);

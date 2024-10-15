@@ -6,20 +6,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-import com.r2s.project_v1.application.dto.request.product.CreateProductRequest;
-import com.r2s.project_v1.application.dto.request.product.UpdateProductRequest;
-import com.r2s.project_v1.application.dto.response.product.CreateProductResponse;
-import com.r2s.project_v1.application.dto.response.product.GetProductResponse;
-import com.r2s.project_v1.application.dto.response.product.UpdateProductResponse;
+import com.r2s.project_v1.application.dto.product.ProductCreateDTO;
+import com.r2s.project_v1.application.dto.product.ProductDTO;
+import com.r2s.project_v1.application.dto.product.ProductUpdateDTO;
+
 import com.r2s.project_v1.application.service.ProductApplicationService;
 import com.r2s.project_v1.infrastructure.security.JwtTokenUtil;
 import com.r2s.project_v1.infrastructure.security.OurUserDetailsService;
 import com.r2s.project_v1.presentation.controller.ProductController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -37,6 +36,8 @@ class ProductControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Value("${server.servlet.context-path}")
+    private String prefix;
 
     @MockBean
     private ProductApplicationService productService;
@@ -45,70 +46,92 @@ class ProductControllerTest {
     @MockBean
     private JwtTokenUtil jwtTokenUtil;
 
-    private CreateProductRequest createProductRequest;
-    private UpdateProductRequest updateProductRequest;
+    private ProductCreateDTO createProductRequest;
+    private ProductUpdateDTO updateProductRequest;
+    private ProductDTO productDTO;
     private MockMultipartFile mockFile;
 
     @BeforeEach
     void setUp() {
         mockFile = new MockMultipartFile("file", "product.jpg", MediaType.IMAGE_JPEG_VALUE, "image data".getBytes());
 
-        createProductRequest = new CreateProductRequest();
+        createProductRequest = new ProductCreateDTO();
+
         createProductRequest.setName("Product 1");
+
         createProductRequest.setPrice(100.0);
+
         createProductRequest.setIdCategory(1);
+
         createProductRequest.setFile(mockFile);
 
-        updateProductRequest = new UpdateProductRequest();
+        updateProductRequest = new ProductUpdateDTO();
+
         updateProductRequest.setId(1);
+
         updateProductRequest.setName("Updated Product");
+
         updateProductRequest.setPrice(120.0);
+
         updateProductRequest.setIdCategory(1);
+
         updateProductRequest.setFile(mockFile);
+
+        productDTO = new ProductDTO();
+
+        productDTO.setId(1);
+
+        productDTO.setName("Updated Product");
+
+        productDTO.setPrice(120.0);
+
+        productDTO.setCategory("brand");
+        productDTO.setProductImage("/image");
+
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void createProduct_shouldReturn201() throws Exception {
-        CreateProductResponse createProductResponse = new CreateProductResponse(1, "Product 1", 100.0, "Category 1", "product.jpg");
 
-        when(productService.createProduct(any(CreateProductRequest.class)))
-                .thenReturn(createProductResponse);
 
-        mockMvc.perform(multipart("/api/v1/product")
+        when(productService.createProduct(any(ProductCreateDTO.class)))
+                .thenReturn(productDTO);
+
+        mockMvc.perform(multipart(prefix+"/product")
                         .file(mockFile)
                         .with(csrf())
-                        .param("name", "Product 1")
-                        .param("price", "100")
-                        .param("idCategory", "1"))
+                        .param("name", createProductRequest.getName())
+                        .param("price", createProductRequest.getPrice().toString())
+                        .param("idCategory", createProductRequest.getIdCategory().toString()))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Product 1"))
-                .andExpect(jsonPath("$.price").value(100.0))
-                .andExpect(jsonPath("$.productImage").value("product.jpg"));
+                .andExpect(jsonPath("$.id").value(productDTO.getId()))
+                .andExpect(jsonPath("$.name").value(productDTO.getName()))
+                .andExpect(jsonPath("$.price").value(productDTO.getPrice()))
+                .andExpect(jsonPath("$.productImage").value(productDTO.getProductImage()));
 
-        verify(productService, times(1)).createProduct(any(CreateProductRequest.class));
+        verify(productService, times(1)).createProduct(any(ProductCreateDTO.class));
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void updateProduct_shouldReturn200() throws Exception {
-        UpdateProductResponse updateProductResponse = new UpdateProductResponse(1, "Updated Product", 120.0, "Category 1", "updated_product.jpg");
 
-        when(productService.updateProduct(any(UpdateProductRequest.class)))
-                .thenReturn(updateProductResponse);
 
-        mockMvc.perform(patch("/api/v1/product")
+        when(productService.updateProduct(any(ProductUpdateDTO.class)))
+                .thenReturn(productDTO);
+
+        mockMvc.perform(patch(prefix+"/product")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"id\":1,\"name\":\"Updated Product\",\"price\":120.0,\"idCategory\":1,\"file\":\"mockFile\"}"))
+                        .content(updateProductRequest.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Updated Product"))
-                .andExpect(jsonPath("$.price").value(120.0))
-                .andExpect(jsonPath("$.productImage").value("updated_product.jpg"));
+                .andExpect(jsonPath("$.id").value(productDTO.getId()))
+                .andExpect(jsonPath("$.name").value(productDTO.getName()))
+                .andExpect(jsonPath("$.price").value(productDTO.getPrice()))
+                .andExpect(jsonPath("$.productImage").value(productDTO.getProductImage()));
 
-        verify(productService, times(1)).updateProduct(any(UpdateProductRequest.class));
+        verify(productService, times(1)).updateProduct(any(ProductUpdateDTO.class));
     }
 
     @Test
@@ -116,7 +139,7 @@ class ProductControllerTest {
     void deleteProduct_shouldReturn200() throws Exception {
         doNothing().when(productService).deleteProduct(anyInt());
 
-        mockMvc.perform(delete("/api/v1/product?id=1")
+        mockMvc.perform(delete(prefix+"/product?id=1")
                         .with(csrf()))
                 .andExpect(status().isOk());
 
@@ -127,18 +150,17 @@ class ProductControllerTest {
     @WithMockUser(roles = "USER")
     void getAllProducts_shouldReturn200() throws Exception {
         PageRequest pageable = PageRequest.of(0, 10);
-        GetProductResponse productResponse = new GetProductResponse(1, "Product 1", 100.0, "Category 1", "product.jpg");
 
         when(productService.getList(pageable))
-                .thenReturn(new PageImpl<>(Collections.singletonList(productResponse)));
+                .thenReturn(new PageImpl<>(Collections.singletonList(productDTO)));
 
-        mockMvc.perform(get("/api/v1/product?page=0&size=10"))
+        mockMvc.perform(get(prefix+"/product?page=0&size=10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(1))
-                .andExpect(jsonPath("$.content[0].name").value("Product 1"))
-                .andExpect(jsonPath("$.content[0].price").value(100.0))
-                .andExpect(jsonPath("$.content[0].category").value("Category 1"))
-                .andExpect(jsonPath("$.content[0].productImage").value("product.jpg"));
+                .andExpect(jsonPath("$.content[0].id").value(productDTO.getId()))
+                .andExpect(jsonPath("$.content[0].name").value(productDTO.getName()))
+                .andExpect(jsonPath("$.content[0].price").value(productDTO.getPrice()))
+                .andExpect(jsonPath("$.content[0].category").value(productDTO.getCategory()))
+                .andExpect(jsonPath("$.content[0].productImage").value(productDTO.getProductImage()));
 
         verify(productService, times(1)).getList(pageable);
     }
